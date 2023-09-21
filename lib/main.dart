@@ -63,7 +63,7 @@ class MyHomePage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ElevatedButton.icon(
-                  onPressed: appState.toggleFavourite(),
+                  onPressed: appState.toggleFavourite,
                   icon: Icon(Icons.favorite_outline_sharp),
                   label: Text('Like')),
               SizedBox(width: 15),
