@@ -1,6 +1,5 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -64,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 0:
         page = GeneratorPage();
       case 1:
-        page = Placeholder();
+        page = FavoritesPage();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
@@ -105,6 +104,41 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+class FavoritesPage extends StatelessWidget {
+  const FavoritesPage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    return appState.favourites.isEmpty
+        ? Center(
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text('No favourites added'),
+              ),
+            ),
+          )
+        : ListView.builder(
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Card(
+                  elevation: 3,
+                  child: ListTile(
+                    leading: Icon(Icons.favorite),
+                    title: Text(appState.favourites[index].toString()),
+                  ),
+                ),
+              );
+            },
+            itemCount: appState.favourites.length,
+          );
+  }
+}
+
 class GeneratorPage extends StatelessWidget {
   const GeneratorPage({super.key});
 
@@ -131,7 +165,7 @@ class GeneratorPage extends StatelessWidget {
             children: [
               ElevatedButton.icon(
                   onPressed: appState.toggleFavourite,
-                  icon: Icon(Icons.favorite),
+                  icon: Icon(icon),
                   label: Text('Like')),
               SizedBox(width: 15),
               ElevatedButton(
