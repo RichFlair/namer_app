@@ -1,5 +1,6 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
         title: 'Namer App',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
         home: MyHomePage(),
       ),
@@ -42,6 +43,11 @@ class MyAppState extends ChangeNotifier {
     } else {
       favourites.add(current);
     }
+    notifyListeners();
+  }
+
+  void removeFavorite(pair) {
+    favourites.remove(pair);
     notifyListeners();
   }
 }
@@ -117,25 +123,39 @@ class FavoritesPage extends StatelessWidget {
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: Text('No favourites added'),
+                child: Text('No favourites added yet.'),
               ),
             ),
           )
-        : ListView.builder(
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                  elevation: 3,
-                  child: ListTile(
-                    leading: Icon(Icons.favorite),
-                    title: Text(appState.favourites[index].toString()),
+        : LayoutBuilder(builder: (context, constraint) {
+            return ListView(
+              children: [
+                Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                        'You have ${appState.favourites.length} favorites'),
                   ),
                 ),
-              );
-            },
-            itemCount: appState.favourites.length,
-          );
+                for (var pair in appState.favourites)
+                  Card(
+                    child: ListTile(
+                        leading: Icon(Icons.favorite),
+                        title: Text(pair.toString()),
+                        trailing: MediaQuery.of(context).size.width > 600
+                            ? TextButton.icon(
+                                onPressed: () => appState.removeFavorite(pair),
+                                icon: Icon(Icons.delete),
+                                label: Text('delete'),
+                              )
+                            : IconButton(
+                                onPressed: () => appState.removeFavorite(pair),
+                                icon: Icon(Icons.delete),
+                              )),
+                  ),
+              ],
+            );
+          });
   }
 }
 
@@ -164,7 +184,7 @@ class GeneratorPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ElevatedButton.icon(
-                  onPressed: appState.toggleFavourite,
+                  onPressed: () => appState.toggleFavourite(),
                   icon: Icon(icon),
                   label: Text('Like')),
               SizedBox(width: 15),
